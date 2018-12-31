@@ -1,0 +1,39 @@
+name: weechat
+summary: Fast, light and extensible chat client (metapackage)
+maintainer: Chris Sanders <sanders.chris@gmail.com>
+description: |
+  WeeChat (Wee Enhanced Environment for Chat) is a fast and light chat
+  client for many operating systems. Everything can be done with a
+  keyboard. It is customizable and extensible with plugins/scripts, and
+  includes 
+  - support of IRC protocol (native) 
+  - support of XMPP/Jabber protocol (with additional script) 
+  - nicklist 
+  - smart hotlist 
+  - horizontal and vertical split 
+  - double charset support (decode/encode)
+  - FIFO pipe for remote control 
+  - 256 colors support 
+  - incremental text search 
+  - dynamic filtering of buffer content 
+  - Perl, Python, Ruby, Lua, Tcl, Scheme and Javascript scripting 
+  - scripts manager 
+  - spell checking 
+  - highly customizable and extensible 
+  - and much more!
+tags:
+  # Replace "misc" with one or more whitelisted tags from this list:
+  # https://jujucharms.com/docs/stable/authors-charm-metadata
+  - misc
+subordinate: false
+series:
+  - bionic
+# provides:
+#   provides-relation:
+#     interface: interface-name
+# requires:
+#   requires-relation:
+#     interface: interface-name
+# peers:
+#   peer-relation:
+#     interface: interface-name

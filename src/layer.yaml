@@ -1,0 +1,9 @@
+includes:
+  - layer:basic
+  - layer:apt
+options:
+  apt:
+    packages:
+      - weechat-curses
+      - weechat-scripts
+  # Add additional layers and interfaces here
