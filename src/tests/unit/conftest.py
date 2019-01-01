@@ -71,6 +71,8 @@ def weechat(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch,
 
     helper.service_file = tmpdir.join('weechat.service').strpath
     helper.fifo_file = tmpdir.join('fifo').strpath
+    helper.relay_cert_folder = tmpdir.strpath + "/ssl"
+    helper.relay_cert_file = helper.relay_cert_folder + "/relay.pem"
 
     # Any other functions that load helper will get this version
     monkeypatch.setattr('lib_weechat.WeechatHelper', lambda: helper)

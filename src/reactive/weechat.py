@@ -14,5 +14,14 @@ def install_weechat():
     helper.install_systemd()
     host.service('enable', 'weechat.service')
     host.service_start('weechat.service')
-    hookenv.status_set('active', '')
     set_flag('weechat.installed')
+
+
+@when('weechat.installed')
+@when_not('weechat.configured')
+def configure_weechat():
+    helper.generate_certificate()
+    host.chownr(helper.relay_cert_folder, 'weechat', 'weechat', chowntopdir=True)
+    helper.enable_relay()
+    hookenv.status_set('active', '')
+    set_flag('weechat.configured')
