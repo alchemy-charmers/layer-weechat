@@ -1,6 +1,7 @@
 includes:
   - layer:basic
   - layer:apt
+  - interface:reverseproxy
 options:
   apt:
     packages:

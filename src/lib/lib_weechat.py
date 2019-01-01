@@ -4,6 +4,7 @@ import random
 
 from charmhelpers.core import hookenv, templating
 from OpenSSL import crypto
+from pyweerelay import Relay
 
 
 class WeechatHelper():
@@ -50,3 +51,7 @@ class WeechatHelper():
         self.weechat_command('/relay sslcertkey')
         self.weechat_command('/set relay.network.password changeme')
         self.weechat_command('/relay add ssl.weechat 9001')
+
+    def ping_relay(self, hostname):
+        with Relay(hostname, port=9001, password='changeme') as r:
+            r.ping()
