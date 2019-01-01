@@ -49,19 +49,28 @@ def mock_remote_unit(monkeypatch):
 
 @pytest.fixture
 def mock_charm_dir(monkeypatch):
-    monkeypatch.setattr('lib_weechat.hookenv.charm_dir', lambda: '/mock/charm/dir')
+    monkeypatch.setattr('lib_weechat.hookenv.charm_dir', lambda: '.')
 
 
 @pytest.fixture
-def weechat(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch):
+def mock_fchown(monkeypatch):
+    monkeypatch.setattr('lib_weechat.templating.os.fchown', mock.Mock())
+
+
+@pytest.fixture
+def weechat(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch,
+            mock_fchown):
     from lib_weechat import WeechatHelper
     helper = WeechatHelper()
 
     # Example config file patching
-    cfg_file = tmpdir.join('example.cfg')
-    with open('./tests/unit/example.cfg', 'r') as src_file:
-        cfg_file.write(src_file.read())
-    helper.example_config_file = cfg_file.strpath
+    # cfg_file = tmpdir.join('example.cfg')
+    # with open('./tests/unit/example.cfg', 'r') as src_file:
+    #     cfg_file.write(src_file.read())
+    # helper.example_config_file = cfg_file.strpath
+
+    helper.service_file = tmpdir.join('weechat.service').strpath
+    helper.fifo_file = tmpdir.join('fifo').strpath
 
     # Any other functions that load helper will get this version
     monkeypatch.setattr('lib_weechat.WeechatHelper', lambda: helper)

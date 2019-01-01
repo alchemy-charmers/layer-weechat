@@ -1,0 +1,14 @@
+[Unit]
+Description=Run weechat in a detached screen session named weechat
+
+[Service]
+Type=simple
+User=weechat
+ExecStart=/usr/bin/screen -D -m -S weechat /usr/bin/weechat
+ExecStop=/usr/bin/screen -S weechat -X quit
+WorkingDirectory=/home/weechat
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

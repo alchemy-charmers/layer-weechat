@@ -22,6 +22,11 @@ async def test_weechat_deploy(model, series):
     assert True
 
 
+async def test_running(run_command):
+    cmd = 'runuser -l weechat -c "screen -list"'
+    result = await run_command(cmd, 'weechat/0')
+    assert 'There is a screen' in result['Stdout']
+
 # def test_example_action(self, deploy, unit):
 #     uuid = unit.run_action('example-action')
 #     action_output = deploy.get_action_output(uuid, full_output=True)
