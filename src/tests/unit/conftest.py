@@ -64,7 +64,13 @@ def mock_websocket(monkeypatch):
                      b'\x00\x00\x00\x1a\x00\x00\x00\x00\x05_pongstr\x00\x00\x00\x05Hello']
     recv = mock.Mock(side_effect=return_values)
     mock_connection.recv = recv
-    monkeypatch.setattr('lib_weechat.create_connection', lambda *x, **y: mock_connection)
+    monkeypatch.setattr('weechat_relay.create_connection', lambda *x, **y: mock_connection)
+
+
+@pytest.fixture
+def weechat_relay(mock_websocket):
+    import weechat_relay
+    return weechat_relay
 
 
 @pytest.fixture
