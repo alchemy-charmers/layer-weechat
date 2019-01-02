@@ -7,4 +7,5 @@ options:
     packages:
       - weechat-curses
       - weechat-scripts
+      # - python3-openssl
   # Add additional layers and interfaces here

@@ -36,3 +36,19 @@ class TestLib():
         with open(weechat.fifo_file, 'r') as fifo:
             contents = fifo.read()
             assert '*/relay add ssl.weechat 9001' in contents
+
+    def test_decode_reply(self, weechat):
+        reply = b'\x00\x00\x00\x1a\x00\x00\x00\x00\x05_pongstr\x00\x00\x00\x05Hello'
+        msgid, obj = weechat.decode_reply(reply)
+        assert msgid == b'_pong'
+        assert obj == b'Hello'
+
+        reply = b'\x00\x00\x00\x1a\x00\x00\x00\x00\x00buf\x00\x00\x00\x05Hello'
+        msgid, obj = weechat.decode_reply(reply)
+        assert msgid == b''
+        assert obj == "Type not implemented: b'buf'"
+
+    def test_ping_relay(self, weechat):
+        # Pass / Fail is due to the mock chaning the return, not the parameters
+        assert weechat.ping_relay('127.0.0.1', 443, secure=False)
+        assert not weechat.ping_relay('127.0.0.1', 9001, secure=True)

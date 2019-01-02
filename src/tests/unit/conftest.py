@@ -58,8 +58,18 @@ def mock_fchown(monkeypatch):
 
 
 @pytest.fixture
+def mock_websocket(monkeypatch):
+    mock_connection = mock.Mock()
+    return_values = [b'\x00\x00\x00\x1a\x00\x00\x00\x00\x05_pongstr\x00\x00\x00\x0DHello Weechat',
+                     b'\x00\x00\x00\x1a\x00\x00\x00\x00\x05_pongstr\x00\x00\x00\x05Hello']
+    recv = mock.Mock(side_effect=return_values)
+    mock_connection.recv = recv
+    monkeypatch.setattr('lib_weechat.create_connection', lambda *x, **y: mock_connection)
+
+
+@pytest.fixture
 def weechat(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch,
-            mock_fchown):
+            mock_fchown, mock_websocket):
     from lib_weechat import WeechatHelper
     helper = WeechatHelper()
 

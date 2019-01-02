@@ -3,3 +3,5 @@ charms.reactive
 mock
 pytest
 pytest-cov
+websocket-client
+pyopenssl
