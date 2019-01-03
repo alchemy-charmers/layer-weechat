@@ -33,9 +33,16 @@ def install_weechat():
 def configure_weechat():
     helper.generate_certificate()
     host.chownr(helper.relay_cert_folder, 'weechat', 'weechat', chowntopdir=True)
-    helper.enable_relay()
+    if helper.charm_config['enable-relay']:
+        helper.enable_relay()
     hookenv.status_set('active', '')
     set_flag('weechat.configured')
+
+
+@when('config.changed.user-config')
+@when('weechat.configured')
+def apply_user_config():
+    helper.apply_user_config()
 
 
 @when('reverseproxy.ready')
@@ -47,7 +54,7 @@ def configure_reverseproxy():
         'urlbase': '/weechat',
         'external_port': 443,
         'internal_host': socket.getfqdn(),
-        'internal_port': 9001,
+        'internal_port': helper.charm_config['relay-port'],
         'proxypass': True,
         'ssl': True,
         'ssl-verify': False,

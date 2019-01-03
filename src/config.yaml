@@ -1,13 +1,31 @@
 options:
-  string-option:
-    type: string
-    default: "Default Value"
-    description: "A short description of the configuration option"
-  boolean-option:
-    type: boolean
-    default: False
-    description: "A short description of the configuration option"
-  int-option:
+  relay-port:
     type: int
     default: 9001
-    description: "A short description of the configuration option"
+    description: "Weechat relay port"
+  relay-password:
+    type: string
+    default: ""
+    description: "Password for relay, blank to generate one automatically"
+  enable-relay:
+    type: boolean
+    default: True
+    descriptoin: "Enable weechat relay"
+  user-config:
+    type: string
+    default: ""
+    description: |
+      Custom config for weechat. One command per line, ex:
+      /server add freenode chat.freenode.net/6697 -ssl -autoconnect
+#   string-option:
+#     type: string
+#     default: "Default Value"
+#     description: "A short description of the configuration option"
+#   boolean-option:
+#     type: boolean
+#     default: False
+#     description: "A short description of the configuration option"
+#   int-option:
+#     type: int
+#     default: 9001
+#     description: "A short description of the configuration option"

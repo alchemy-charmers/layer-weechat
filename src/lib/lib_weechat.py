@@ -1,13 +1,13 @@
 import os
 import subprocess
 import random
+import string
 import weechat_relay
-# import struct
-# import ssl
 
-from charmhelpers.core import hookenv, templating
+from charmhelpers.core import hookenv, templating, unitdata
 from OpenSSL import crypto
-# from websocket import create_connection
+
+kv = unitdata.kv()
 
 
 class WeechatHelper():
@@ -17,6 +17,12 @@ class WeechatHelper():
         self.fifo_file = '/home/weechat/.weechat/weechat_fifo'
         self.relay_cert_folder = '/home/weechat/.weechat/ssl'
         self.relay_cert_file = self.relay_cert_folder + '/relay.pem'
+        self.relay_password = kv.get('relay-password')
+
+    def gen_passwd(self):
+        chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
+        size = random.randint(8, 12)
+        return ''.join(random.choice(chars) for x in range(size))
 
     def install_systemd(self):
         templating.render('weechat.service',
@@ -24,7 +30,11 @@ class WeechatHelper():
                           context={})
 
     def weechat_command(self, command):
+        hookenv.log("Received weechat_command: {}".format(command))
+        if not command:
+            return 'Empty command'
         cmd = "*{}".format(command)
+        hookenv.log("Calling fifo with: {}".format(cmd))
         result = subprocess.check_output('echo {} > {}'.format(cmd, self.fifo_file),
                                          shell=True)
         return result.decode()
@@ -51,47 +61,21 @@ class WeechatHelper():
             certfile.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
 
     def enable_relay(self):
+        if not self.relay_password:
+            if self.charm_config['relay-password']:
+                kv.set('relay-password', self.charm_config['relay-password'])
+                self.relay_password = self.charm_config['relay-password']
+            else:
+                password = self.gen_passwd()
+                kv.set('relay-password', password)
+                self.relay_password = password
         self.weechat_command('/relay sslcertkey')
-        self.weechat_command('/set relay.network.password changeme')
-        self.weechat_command('/relay add ssl.weechat 9001')
-
-    # def decode_reply(self, reply):
-        # length, compression, idlen = struct.unpack('!I?I', reply[0:9])
-        # if idlen:
-        #     index = 9 + idlen
-        #     msgid = reply[9:index]
-        # else:
-        #     index = 9
-        #     msgid = b''
-        # typ = reply[index:index + 3]
-        # index += 3
-        # if typ == b'str':
-        #     strlen = struct.unpack('!I', reply[index:index + 4])[0]
-        #     index += 4
-        #     obj = reply[index:index + strlen]
-        # else:
-        #     hookenv.log("Type not implemented: {}".format(typ),
-        #                 level=hookenv.WARNING)
-        #     obj = "Type not implemented: {}".format(typ)
-        # return(msgid, obj)
+        self.weechat_command('/set relay.network.password {}'.format(self.relay_password))
+        self.weechat_command('/relay add ssl.weechat {}'.format(self.charm_config['relay-port']))
 
     def ping_relay(self, hostname, port, secure=False):
-        return weechat_relay.ping_relay(hostname, port, 'changeme', secure)
-        # # b'\x00\x00\x00\x1a\x00\x00\x00\x00\x05_pongstr\x00\x00\x00\x05Hello'
-        # if secure:
-        #     ws = create_connection("wss://{}:{}/weechat".format(hostname, port),
-        #                            sslopt={"cert_reqs": ssl.CERT_NONE})
-        # else:
-        #     ws = create_connection("ws://{}:{}/weechat".format(hostname, port))
-        # ws.send('init password=changeme,compression=off\r\n')
-        # ws.send('ping Hello Weechat\r\n')
-        # result = None
-        # while not result:
-        #     result = ws.recv()
-        # ws.close()
-        # msgid, obj = self.decode_reply(result)
-        # if msgid == b'_pong' and\
-        #    obj == b'Hello Weechat':
-        #     return True
-        # else:
-        #     return False
+        return weechat_relay.ping_relay(hostname, port, self.relay_password, secure)
+
+    def apply_user_config(self):
+        for line in self.charm_config['user-config'].strip().split('\n'):
+            self.weechat_command(line)
