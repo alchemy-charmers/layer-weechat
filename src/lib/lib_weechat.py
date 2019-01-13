@@ -13,7 +13,12 @@ kv = unitdata.kv()
 class WeechatHelper():
     def __init__(self):
         self.charm_config = hookenv.config()
+        self.encfs_password = self.charm_config['encfs-password']
+        self.charm_config['encfs-password'] = 'not-the-password'
+        self.weechat_folder = "/home/weechat/.weechat"
+        self.encweechat_folder = "/home/weechat/.encweechat"
         self.service_file = '/lib/systemd/system/weechat.service'
+        self.mount_file = '/root/mountencfs.sh'
         self.fifo_file = '/home/weechat/.weechat/weechat_fifo'
         self.relay_cert_folder = '/home/weechat/.weechat/ssl'
         self.relay_cert_file = self.relay_cert_folder + '/relay.pem'
@@ -23,6 +28,11 @@ class WeechatHelper():
         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
         size = random.randint(8, 12)
         return ''.join(random.choice(chars) for x in range(size))
+
+    def install_mnt_script(self):
+        templating.render('mountencfs.sh',
+                          self.mount_file,
+                          context={'unit': hookenv.local_unit()})
 
     def install_systemd(self):
         templating.render('weechat.service',
@@ -72,6 +82,7 @@ class WeechatHelper():
         self.weechat_command('/relay sslcertkey')
         self.weechat_command('/set relay.network.password {}'.format(self.relay_password))
         self.weechat_command('/relay add ssl.weechat {}'.format(self.charm_config['relay-port']))
+        self.weechat_command('/save')
 
     def ping_relay(self, hostname, port, secure=False):
         return weechat_relay.ping_relay(hostname, port, self.relay_password, secure)
@@ -79,3 +90,4 @@ class WeechatHelper():
     def apply_user_config(self):
         for line in self.charm_config['user-config'].strip().split('\n'):
             self.weechat_command(line)
+            self.weechat_command('/save')

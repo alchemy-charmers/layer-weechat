@@ -17,6 +17,14 @@ options:
     description: |
       Custom config for weechat. One command per line, ex:
       /server add freenode chat.freenode.net/6697 -ssl -autoconnect
+  encfs-enabled:
+    type: boolean
+    default: False
+    description: "Encrypt the weechat folder and logs at rest"
+  encfs-password:
+    type: string
+    default: ""
+    description: "Encryption password, must be provided if encryption is enabled"
 #   string-option:
 #     type: string
 #     default: "Default Value"

@@ -10,3 +10,6 @@
 [submodule "src/lib/pyweerelay"]
 	path = src/lib/pyweerelay
 	url = https://github.com/vktec/pyweerelay.git
+[submodule "layers/layer-version"]
+	path = layers/layer-version
+	url = https://github.com/chris-sanders/layer-version.git

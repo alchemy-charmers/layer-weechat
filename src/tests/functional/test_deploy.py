@@ -19,7 +19,10 @@ async def model():
 
 @pytest.mark.parametrize('series', series)
 async def test_weechat_deploy(model, series):
-    weechat = await model.deploy('.', series=series)
+    config = {'encfs-enabled': True,
+              'encfs-password': 'test-password',
+              'relay-password': 'changeme'}
+    weechat = await model.deploy('.', series=series, config=config)
     await model.deploy('cs:~chris.sanders/haproxy', series='xenial')
     await model.block_until(lambda: weechat.status == 'active')
     assert weechat.status == 'active'

@@ -1,11 +1,15 @@
 includes:
   - layer:basic
   - layer:apt
+  - layer:version
   - interface:reverseproxy
 options:
+  version:
+    file_name: "repo-info"
   apt:
     packages:
       - weechat-curses
       - weechat-scripts
+      - encfs
       # - python3-openssl
   # Add additional layers and interfaces here
