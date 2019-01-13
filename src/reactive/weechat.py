@@ -28,7 +28,9 @@ def setup_encfs():
     subprocess.check_call(cmd, shell=True)
     host.chownr(helper.weechat_folder, 'weechat', 'weechat',
                 chowntopdir=True)
-    helper.install_mnt_script()
+    helper.install_enc_mount()
+    os.chmod(helper.mount_file, 0o700)
+    host.service('enable', 'home-weechat-.weechat.mount')
 
 
 @when_not('weechat.installed')

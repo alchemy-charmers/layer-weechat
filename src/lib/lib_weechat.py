@@ -19,6 +19,7 @@ class WeechatHelper():
         self.encweechat_folder = "/home/weechat/.encweechat"
         self.service_file = '/lib/systemd/system/weechat.service'
         self.mount_file = '/root/mountencfs.sh'
+        self.enc_unit_file = '/lib/systemd/system/home-weechat-.weechat.mount'
         self.fifo_file = '/home/weechat/.weechat/weechat_fifo'
         self.relay_cert_folder = '/home/weechat/.weechat/ssl'
         self.relay_cert_file = self.relay_cert_folder + '/relay.pem'
@@ -32,6 +33,12 @@ class WeechatHelper():
     def install_mnt_script(self):
         templating.render('mountencfs.sh',
                           self.mount_file,
+                          context={'unit': hookenv.local_unit()})
+
+    def install_enc_mount(self):
+        self.install_mnt_script()
+        templating.render('home-weechat-.weechat.mount',
+                          self.enc_unit_file,
                           context={'unit': hookenv.local_unit()})
 
     def install_systemd(self):

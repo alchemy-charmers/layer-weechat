@@ -1,0 +1,15 @@
+[Unit]
+SourcePath=/etc/fstab
+Documentation=man:fstab(5) man:systemd-fstab-generator(8)
+After=jujud-unit-{{unit}}.service
+After=jujud-unit-{{unit}}.service
+Requires=jujud-unit-{{unit}}.service
+
+[Mount]
+Where=/home/weechat/.weechat
+What=/root/mountencfs.sh#/home/weechat/.encweechat
+Type=fuse
+Options=auto,_netdev,nofail
+
+[Install]
+WantedBy=multi-user.target
