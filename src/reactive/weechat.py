@@ -74,11 +74,15 @@ def apply_user_config():
 @when_not('reverseproxy.configured')
 def configure_reverseproxy():
     interface = endpoint_from_name('reverseproxy')
+    if helper.charm_config['proxy-via-hostname']:
+        internal_host = socket.getfqdn()
+    else:
+        internal_host = hookenv.unit_public_ip()
     config = {
         'mode': 'http',
         'urlbase': '/weechat',
         'external_port': 443,
-        'internal_host': socket.getfqdn(),
+        'internal_host': internal_host,
         'internal_port': helper.charm_config['relay-port'],
         'proxypass': True,
         'ssl': True,

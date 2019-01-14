@@ -25,15 +25,7 @@ options:
     type: string
     default: ""
     description: "Encryption password, must be provided if encryption is enabled"
-#   string-option:
-#     type: string
-#     default: "Default Value"
-#     description: "A short description of the configuration option"
-#   boolean-option:
-#     type: boolean
-#     default: False
-#     description: "A short description of the configuration option"
-#   int-option:
-#     type: int
-#     default: 9001
-#     description: "A short description of the configuration option"
+  proxy-via-hostname:
+    type: boolean
+    default: false
+    description: "If true use fqdn with the reverse proxy, if false use ip address"
