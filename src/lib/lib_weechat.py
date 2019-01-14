@@ -97,4 +97,4 @@ class WeechatHelper():
     def apply_user_config(self):
         for line in self.charm_config['user-config'].strip().split('\n'):
             self.weechat_command(line)
-            self.weechat_command('/save')
+        self.weechat_command('/save')
