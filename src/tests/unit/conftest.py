@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import mock
+import os
 import pytest
 
 
@@ -86,7 +87,8 @@ def weechat(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch,
     # helper.example_config_file = cfg_file.strpath
 
     helper.service_file = tmpdir.join('weechat.service').strpath
-    helper.fifo_file = tmpdir.join('fifo').strpath
+    helper.fifo_file = tmpdir.strpath + '/fifo'
+    os.mkfifo(helper.fifo_file, 0o777)
     helper.relay_cert_folder = tmpdir.strpath + "/ssl"
     helper.relay_cert_file = helper.relay_cert_folder + "/relay.pem"
 
