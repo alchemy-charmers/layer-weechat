@@ -9,10 +9,10 @@ in the Juju GUI.
 # Usage
 
 ```bash
-juju deploy cs:~pirate-charmesr/weechat
+juju deploy cs:~pirate-charmers/weechat
 ```
 
-This will intsall weechat in a screen session. You can connect to the machine
+This will install weechat in a screen session. You can connect to the machine
 and connect to the screen as the user 'weechat'.
 
 ```bash
