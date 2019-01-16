@@ -11,5 +11,4 @@ options:
       - weechat-curses
       - weechat-scripts
       - encfs
-      # - python3-openssl
-  # Add additional layers and interfaces here
+repo: https://github.com/pirate-charmers/layer-weechat

@@ -10,7 +10,7 @@ options:
   enable-relay:
     type: boolean
     default: True
-    descriptoin: "Enable weechat relay"
+    description: "Enable weechat relay"
   user-config:
     type: string
     default: ""
