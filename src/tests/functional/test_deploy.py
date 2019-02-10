@@ -59,8 +59,14 @@ async def test_relation(model):
     assert weechat_relay.ping_relay(haproxy_unit.public_address, 443,
                                     'changeme', secure=False)
 
-# def test_example_action(self, deploy, unit):
-#     uuid = unit.run_action('example-action')
-#     action_output = deploy.get_action_output(uuid, full_output=True)
-#     print(action_output)
-#     assert action_output['status'] == 'completed'
+
+async def test_get_relay_password(model):
+    weechat = model.applications['weechat']
+    for unit in weechat.units:
+        # Run the action
+        action = await unit.run_action('get-relay-password')
+        action = await action.wait()
+        print(unit)
+        print(action)
+        assert action.status == 'completed'
+        assert action.password == 'changem'

@@ -87,5 +87,6 @@ def configure_reverseproxy():
         'proxypass': True,
         'ssl': True,
         'ssl-verify': False,
+        'check': False,
     }
     interface.configure(config)

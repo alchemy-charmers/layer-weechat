@@ -1,2 +1,2 @@
-example-action:
-  description: "This is just a test"
+get-relay-password:
+  description: "Return the relay password"
