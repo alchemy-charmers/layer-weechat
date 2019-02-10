@@ -7,8 +7,6 @@ import weechat_relay
 from charmhelpers.core import hookenv, templating, unitdata
 from OpenSSL import crypto
 
-kv = unitdata.kv()
-
 
 class WeechatHelper():
     def __init__(self):
@@ -23,7 +21,8 @@ class WeechatHelper():
         self.fifo_file = '/home/weechat/.weechat/weechat_fifo'
         self.relay_cert_folder = '/home/weechat/.weechat/ssl'
         self.relay_cert_file = self.relay_cert_folder + '/relay.pem'
-        self.relay_password = kv.get('relay-password')
+        self.kv = unitdata.kv()
+        self.relay_password = self.kv.get('relay-password')
 
     def gen_passwd(self):
         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
@@ -56,10 +55,6 @@ class WeechatHelper():
                                          shell=True)
         return result.decode()
 
-    def action_function(self):
-        ''' An example function for calling from an action '''
-        return
-
     def generate_certificate(self):
         pkey = crypto.PKey()
         pkey.generate_key(crypto.TYPE_RSA, 2048)
@@ -80,11 +75,11 @@ class WeechatHelper():
     def enable_relay(self):
         if not self.relay_password:
             if self.charm_config['relay-password']:
-                kv.set('relay-password', self.charm_config['relay-password'])
+                self.kv.set('relay-password', self.charm_config['relay-password'])
                 self.relay_password = self.charm_config['relay-password']
             else:
                 password = self.gen_passwd()
-                kv.set('relay-password', password)
+                self.kv.set('relay-password', password)
                 self.relay_password = password
         self.weechat_command('/relay sslcertkey')
         self.weechat_command('/set relay.network.password {}'.format(self.relay_password))

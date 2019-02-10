@@ -23,10 +23,13 @@ lint:
 	@echo "Running flake8"
 	@cd src && tox -e lint
 
-test: unittest lint
+test: unittest lint functional
 
 unittest:
 	@cd src && tox -e unit
+
+functional: build
+	@cd src && tox -e functional
 
 build:
 	@echo "Building charm to base directory $(JUJU_REPOSITORY)"

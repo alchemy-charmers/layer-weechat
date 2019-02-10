@@ -44,6 +44,12 @@ def mock_hookenv_config(monkeypatch):
 
 
 @pytest.fixture
+def mock_hookenv_action(monkeypatch):
+    monkeypatch.setattr('lib_weechat.hookenv.action_set', mock.Mock())
+    monkeypatch.setattr('lib_weechat.hookenv.action_get', mock.Mock())
+
+
+@pytest.fixture
 def mock_remote_unit(monkeypatch):
     monkeypatch.setattr('lib_weechat.hookenv.remote_unit', lambda: 'unit-mock/0')
 
@@ -76,7 +82,7 @@ def weechat_relay(mock_websocket):
 
 @pytest.fixture
 def weechat(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch,
-            mock_fchown, mock_websocket):
+            mock_fchown, mock_websocket, mock_hookenv_action):
     from lib_weechat import WeechatHelper
     helper = WeechatHelper()
 

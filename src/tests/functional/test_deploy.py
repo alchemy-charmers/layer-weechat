@@ -1,11 +1,20 @@
+import os
 import pytest
 import weechat_relay
+import yaml
 from juju.model import Model
 
 
 # Treat tests as coroutines
 pytestmark = pytest.mark.asyncio
 
+series = ['bionic']
+
+# Load charm metadata
+metadata = yaml.safe_load(open("./metadata.yaml"))
+juju_repository = os.getenv('JUJU_REPOSITORY',
+                            '.').rstrip('/')
+charmname = metadata['name']
 series = ['bionic']
 
 
@@ -22,8 +31,10 @@ async def test_weechat_deploy(model, series):
     config = {'encfs-enabled': True,
               'encfs-password': 'test-password',
               'relay-password': 'changeme'}
-    weechat = await model.deploy('.', series=series, config=config)
-    await model.deploy('cs:~chris.sanders/haproxy', series='xenial')
+    weechat = await model.deploy('{}/builds/weechat'.format(juju_repository),
+                                 series=series,
+                                 config=config)
+    await model.deploy('cs:~pirate-charmers/haproxy', series='xenial')
     await model.block_until(lambda: weechat.status == 'active')
     assert weechat.status == 'active'
 
@@ -69,4 +80,4 @@ async def test_get_relay_password(model):
         print(unit)
         print(action)
         assert action.status == 'completed'
-        assert action.password == 'changem'
+        assert action.results['password'] == 'changeme'
