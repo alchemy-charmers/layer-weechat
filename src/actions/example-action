@@ -1,6 +1,0 @@
-#!/usr/local/sbin/charm-env python3
-
-from lib_weechat import WeechatHelper
-
-helper = WeechatHelper()
-helper.action_function()
