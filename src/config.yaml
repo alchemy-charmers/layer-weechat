@@ -29,3 +29,7 @@ options:
     type: boolean
     default: false
     description: "If true use fqdn with the reverse proxy, if false use ip address"
+  enable-slack:
+    type: boolean
+    default: false
+    description: "When set to true, installs the wee_slack script to enable usage of Slack in WeeChat via the native WebSocket API"

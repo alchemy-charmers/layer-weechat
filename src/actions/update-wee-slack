@@ -1,0 +1,11 @@
+#!/usr/local/sbin/charm-env python3
+
+from lib_weechat import WeechatHelper
+from charmhelpers.core import hookenv
+
+helper = WeechatHelper()
+if helper.charm_config['enable-slack']:
+  helper.install_wee_slack()
+  hookenv.action_set({'outcome': 'success'})
+else:
+  hookenv.action_set({'outcome': 'failed'})

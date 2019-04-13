@@ -16,6 +16,32 @@ class TestLib():
             content = service_file.read()
             assert 'ExecStart=/usr/bin/screen -D -m -S weechat /usr/bin/weechat' in content
 
+    def test_install_weeslack(self, weechat, mock_install_remote,
+                              mock_symlink, mock_chownr, mock_isfile,
+                              mock_copyfile):
+        weechat.install_wee_slack()
+        mock_install_remote.assert_called_once_with(
+            'https://github.com/wee-slack/wee-slack/archive/master.tar.gz'
+        )
+        mock_isfile.assert_called_once_with(
+            '/tmp/wee-slack-master/wee_slack.py'
+        )
+        mock_copyfile.assert_called_once_with(
+            '/tmp/wee-slack-master/wee_slack.py',
+            '/home/weechat/.weechat/python/wee_slack.py'
+        )
+        mock_symlink.assert_called_once_with(
+            '/home/weechat/.weechat/python/wee_slack.py',
+            '/home/weechat/.weechat/python/autoload/wee_slack.py'
+        )
+        mock_chownr.assert_called_once_with(
+            weechat.python_plugin_dir,
+            'weechat',
+            'weechat',
+            follow_links=True,
+            chowntopdir=True
+        )
+    
     def test_generate_certificate(self, weechat):
         weechat.generate_certificate()
         with open(weechat.relay_cert_file, 'r') as cert_file:

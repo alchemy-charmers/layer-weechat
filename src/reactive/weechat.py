@@ -40,6 +40,8 @@ def install_weechat():
     subprocess.check_call(['passwd', '-d', 'weechat'])
     if helper.charm_config['encfs-enabled']:
         setup_encfs()
+    if helper.charm_config['enable-slack']:
+        helper.install_wee_slack()
     helper.install_systemd()
     host.service('enable', 'weechat.service')
     host.service_start('weechat.service')
@@ -68,6 +70,12 @@ def configure_weechat():
 @when('weechat.configured')
 def apply_user_config():
     helper.apply_user_config()
+
+
+@when('config.changed.enable-slack')
+@when('weechat.installed')
+def install_wee_slack():
+    helper.install_wee_slack()
 
 
 @when('reverseproxy.ready')

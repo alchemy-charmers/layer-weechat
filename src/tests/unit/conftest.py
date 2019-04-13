@@ -35,6 +35,7 @@ def mock_hookenv_config(monkeypatch):
         # Load all defaults
         for key, value in yml['options'].items():
             cfg[key] = value['default']
+        cfg['enable-slack'] = True
 
         # Manually add cfg from other layers
         # cfg['my-other-layer'] = 'mock'
@@ -65,6 +66,64 @@ def mock_fchown(monkeypatch):
 
 
 @pytest.fixture
+def mock_install_remote(monkeypatch):
+
+    def return_tmp_dir(uri):
+        return '/tmp'
+
+    mock_method = mock.Mock()
+    mock_method.side_effect = return_tmp_dir
+    monkeypatch.setattr('lib_weechat.fetch.install_remote',
+                        mock_method)
+    return mock_method
+
+
+@pytest.fixture
+def mock_makedirs(monkeypatch):
+    mock_method = mock.Mock()
+    monkeypatch.setattr('lib_weechat.os.makedirs',
+                        mock_method)
+    return mock_method
+
+
+@pytest.fixture
+def mock_chownr(monkeypatch):
+    mock_method = mock.Mock()
+    monkeypatch.setattr('lib_weechat.host.chownr',
+                        mock_method)
+    return mock_method
+
+
+@pytest.fixture
+def mock_isfile(monkeypatch):
+
+    def return_true(filename):
+        return True
+
+    mock_method = mock.Mock()
+    mock_method.side_effect = return_true
+    monkeypatch.setattr('lib_weechat.os.path.isfile',
+                        mock_method)
+    return mock_method
+
+
+@pytest.fixture
+def mock_copyfile(monkeypatch):
+    mock_method = mock.Mock()
+    monkeypatch.setattr('lib_weechat.shutil.copyfile',
+                        mock_method)
+    return mock_method
+
+
+@pytest.fixture
+def mock_symlink(monkeypatch):
+    mock_method = mock.Mock()
+    monkeypatch.setattr('lib_weechat.host.symlink',
+                        mock_method)
+    return mock_method
+
+
+@pytest.fixture
 def mock_websocket(monkeypatch):
     mock_connection = mock.Mock()
     return_values = [b'\x00\x00\x00\x1a\x00\x00\x00\x00\x05_pongstr\x00\x00\x00\x0DHello Weechat',
@@ -82,7 +141,9 @@ def weechat_relay(mock_websocket):
 
 @pytest.fixture
 def weechat(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch,
-            mock_fchown, mock_websocket, mock_hookenv_action):
+            mock_fchown, mock_makedirs, mock_chownr, mock_isfile,
+            mock_copyfile, mock_symlink, mock_websocket,
+            mock_install_remote, mock_hookenv_action):
     from lib_weechat import WeechatHelper
     helper = WeechatHelper()
 

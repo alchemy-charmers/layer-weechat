@@ -1,2 +1,4 @@
 get-relay-password:
   description: "Return the relay password"
+update-wee-slack:
+  description: "Update the wee_slack script"

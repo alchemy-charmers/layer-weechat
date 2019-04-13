@@ -30,7 +30,8 @@ async def model():
 async def test_weechat_deploy(model, series):
     config = {'encfs-enabled': True,
               'encfs-password': 'test-password',
-              'relay-password': 'changeme'}
+              'relay-password': 'changeme',
+              'enable-slack': True}
     weechat = await model.deploy('{}/builds/weechat'.format(juju_repository),
                                  series=series,
                                  config=config)
@@ -81,3 +82,14 @@ async def test_get_relay_password(model):
         print(action)
         assert action.status == 'completed'
         assert action.results['password'] == 'changeme'
+
+
+async def test_update_wee_slack(model):
+    weechat = model.applications['weechat']
+    for unit in weechat.units:
+        # Run the action
+        action = await unit.run_action('update-wee-slack')
+        action = await action.wait()
+        print(unit)
+        print(action)
+        assert action.status == 'completed'

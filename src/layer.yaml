@@ -10,5 +10,7 @@ options:
     packages:
       - weechat-curses
       - weechat-scripts
+      - python-websocket
+      - python3-websocket
       - encfs
 repo: https://github.com/pirate-charmers/layer-weechat

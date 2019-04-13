@@ -1,15 +1,26 @@
+"""Helper library for Weechat reactive charm."""
 import os
 import subprocess
 import random
+import shutil
 import string
 import weechat_relay
 
-from charmhelpers.core import hookenv, templating, unitdata
+from charmhelpers.core import (
+    hookenv,
+    templating,
+    unitdata,
+    host
+)
+from charmhelpers import fetch
 from OpenSSL import crypto
 
 
 class WeechatHelper():
+    """Helper for installing and configuring WeeChat."""
+
     def __init__(self):
+        """Set instance variables based on charm configuration."""
         self.charm_config = hookenv.config()
         self.encfs_password = self.charm_config['encfs-password']
         self.charm_config['encfs-password'] = 'not-the-password'
@@ -20,25 +31,83 @@ class WeechatHelper():
         self.enc_unit_file = '/lib/systemd/system/home-weechat-.weechat.mount'
         self.fifo_file = '/home/weechat/.weechat/weechat_fifo'
         self.relay_cert_folder = '/home/weechat/.weechat/ssl'
+        self.python_plugin_dir = '/home/weechat/.weechat/python'
         self.relay_cert_file = self.relay_cert_folder + '/relay.pem'
         self.kv = unitdata.kv()
         self.relay_password = self.kv.get('relay-password')
 
     def gen_passwd(self):
+        """
+        Generate random password.
+
+        :rtype str
+        :returns random password
+        """
         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
         size = random.randint(8, 12)
         return ''.join(random.choice(chars) for x in range(size))
 
     def install_mnt_script(self):
+        """Install script for mounting encfs prior to starting WeeChat."""
         templating.render('mountencfs.sh',
                           self.mount_file,
                           context={'unit': hookenv.local_unit()})
 
     def install_enc_mount(self):
+        """Install systemd mount unit for mounting encfs prior to starting WeeChat"""
         self.install_mnt_script()
         templating.render('home-weechat-.weechat.mount',
                           self.enc_unit_file,
                           context={'unit': hookenv.local_unit()})
+
+    def install_py_script(self, uri, name):
+        """Install a weechat addon script from an URI"""
+        # ensure plugins dir and autoload dir exists
+        for dirname in [
+                self.python_plugin_dir,
+                "{}/autoload".format(
+                    self.python_plugin_dir)]:
+            os.makedirs(dirname,
+                        mode=0o700,
+                        exist_ok=True)
+        
+        # checkout addon
+        local_download = fetch.install_remote(uri)
+        hookenv.log("Downloaded wee_slack to {}".format(
+            local_download))
+        if os.path.isfile("{}/wee-slack-master/wee_slack.py".format(local_download)):
+            hookenv.log("Copying wee_slack from {}/wee-slack-master/ to {}".format(
+                local_download,
+                self.python_plugin_dir))
+            shutil.copyfile(
+                "{}/wee-slack-master/wee_slack.py".format(local_download),
+                "{}/wee_slack.py".format(self.python_plugin_dir))
+
+        # symlink into autoload
+        hookenv.log("Symlinking wee_slack from {0} to {0}/autoload".format(
+            self.python_plugin_dir))
+        host.symlink(
+            "{}/{}".format(
+                self.python_plugin_dir,
+                name),
+            "{}/autoload/{}".format(
+                self.python_plugin_dir,
+                name))
+        # check ownsership
+        host.chownr(
+            self.python_plugin_dir,
+            'weechat',
+            'weechat',
+            follow_links=True,
+            chowntopdir=True
+        )
+
+    def install_wee_slack(self):
+        """Install wee_slack script for Slack features"""
+        self.install_py_script(
+            'https://github.com/wee-slack/wee-slack/archive/master.tar.gz',
+            'wee_slack.py'
+        )
 
     def install_systemd(self):
         templating.render('weechat.service',
