@@ -11,4 +11,4 @@ options:
       - weechat-curses
       - weechat-scripts
       - encfs
-repo: https://github.com/pirate-charmers/layer-weechat
+repo: https://github.com/alchemy-charmers/layer-weechat
