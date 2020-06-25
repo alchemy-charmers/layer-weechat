@@ -3,6 +3,10 @@ options:
     type: int
     default: 9001
     description: "Weechat relay port"
+  irc-relay-port:
+    type: int
+    default: 6697
+    description: "Weechat IRC relay port"
   relay-password:
     type: string
     default: ""
