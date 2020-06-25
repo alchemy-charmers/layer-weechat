@@ -78,7 +78,7 @@ def configure_reverseproxy():
         internal_host = socket.getfqdn()
     else:
         internal_host = hookenv.unit_public_ip()
-    config = {
+    config = [{
         'mode': 'http',
         'urlbase': '/weechat',
         'external_port': 443,
@@ -88,5 +88,10 @@ def configure_reverseproxy():
         'ssl': True,
         'ssl-verify': False,
         'check': False,
-    }
+    }, {
+        'mode': 'tcp',
+        'external_port': 6697,
+        'internal_host': internal_host,
+        'internal_port': helper.charm_config['irc-relay-port'],
+    }]
     interface.configure(config)

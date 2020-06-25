@@ -84,6 +84,7 @@ class WeechatHelper():
         self.weechat_command('/relay sslcertkey')
         self.weechat_command('/set relay.network.password {}'.format(self.relay_password))
         self.weechat_command('/relay add ssl.weechat {}'.format(self.charm_config['relay-port']))
+        self.weechat_command('/relay add ssl.irc {}'.format(self.charm_config['irc-relay-port']))
         self.weechat_command('/save')
 
     def ping_relay(self, hostname, port, secure=False):
